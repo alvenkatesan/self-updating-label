@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # In-memory broker for background tasks (future use)
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  # Primary relational store (future use)
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: labeldb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # FastAPI application server
+  api:
+    build: ./api
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  # Placeholder for background worker
+  worker:
+    build: ./api
+    depends_on:
+      - redis
+    command: sleep infinity
+    restart: unless-stopped
+
+  # Frontend placeholder (we’ll fill ui/ later)
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  db-data:
